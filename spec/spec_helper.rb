@@ -53,9 +53,9 @@ module BrowserConfigHelper
         client_id: "GoogleClientId",
         client_secret: "GoogleClientSecret"
       },
-      "sky_drive" => {
-        client_id: "SkyDriveClientId",
-        client_secret: "SkyDriveClientSecret"
+      "one_drive" => {
+        client_id: "OneDriveClientId",
+        client_secret: "OneDriveClientSecret"
       }
     })
   end

@@ -1,6 +1,6 @@
 module BrowseEverything
   module Driver
-    class SkyDrive < Base
+    class OneDrive < Base
 
       require 'skydrive'
 
@@ -9,15 +9,15 @@ module BrowseEverything
       end
 
       def container_items
-        ["folder","album"]
+        ["folder", "album"]
       end
 
       def validate_config
         unless config[:client_id]
-          raise BrowseEverything::InitializationError, "SkyDrive driver requires a :client_id argument"
+          raise BrowseEverything::InitializationError, "OneDrive driver requires a :client_id argument"
         end
         unless config[:client_secret]
-          raise BrowseEverything::InitializationError, "SkyDrive driver requires a :client_secret argument"
+          raise BrowseEverything::InitializationError, "OneDrive driver requires a :client_secret argument"
         end
       end
 
@@ -50,45 +50,39 @@ module BrowseEverything
         [response.download_link, {expires: 1.hour.from_now, file_name: File.basename(path), file_size: response.size.to_i}]
       end
 
-
-
       def file_details(file)
-          BrowseEverything::FileEntry.new(
-            safe_id(file.id),
-            "#{key}:#{safe_id(file.id)}",
-            file.name,
-            file.size,
-            file.updated_time,
-            false
-          )
-      end
-
-     def parent_folder_details(file)
-          BrowseEverything::FileEntry.new(
-            safe_id(file.parent_id),
-            "#{key}:#{safe_id(file.parent_id)}",
-            "..",
-            0,
-            Time.now,
-            true
-          )
-      end
-
-
-
-
-      def folder_details(folder)
         BrowseEverything::FileEntry.new(
-            safe_id(folder.id),
-            "#{key}:#{safe_id(folder.id)}",
-            folder.name,
-            0,
-            folder.updated_time,
-            true,
-            'directory'#todo how are we getting mime type
+          safe_id(file.id),
+          "#{key}:#{safe_id(file.id)}",
+          file.name,
+          file.size,
+          file.updated_time,
+          false
         )
       end
 
+      def parent_folder_details(file)
+        BrowseEverything::FileEntry.new(
+          safe_id(file.parent_id),
+          "#{key}:#{safe_id(file.parent_id)}",
+          "..",
+          0,
+          Time.now,
+          true
+        )
+      end
+
+      def folder_details(folder)
+        BrowseEverything::FileEntry.new(
+          safe_id(folder.id),
+          "#{key}:#{safe_id(folder.id)}",
+          folder.name,
+          0,
+          folder.updated_time,
+          true,
+          'directory'#todo how are we getting mime type
+        )
+      end
 
       def auth_link
         oauth_client.authorize_url
@@ -106,6 +100,7 @@ module BrowseEverything
       end
 
       private
+
       def oauth_client
         Skydrive::Oauth::Client.new(config[:client_id], config[:client_secret], callback.to_s,"wl.skydrive")
         #todo error checking here
